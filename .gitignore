@@ -1,0 +1,5 @@
+.vscode/
+crawler/
+venv/
+data/
+*.db
