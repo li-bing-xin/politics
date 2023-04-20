@@ -1,16 +1,17 @@
 from datetime import datetime
 import json
+import os
 import sqlite3
-
 from requests import request
 
 
-BASE_URL = 'https://content.guardianapis.com/search'
-API_KEY = 'a1d9129e-4b9f-4ece-8365-6062835929a2'
+API_KEY: str = 'a1d9129e-4b9f-4ece-8365-6062835929a2'
 
 datas = []
 
 def fetch_datas():
+    BASE_URL = 'https://content.guardianapis.com/search'
+
     now = datetime.now()
     year = now.year
 
@@ -40,7 +41,9 @@ def fetch_datas():
         print('page-' + str(page) + ' is done!')
 
 def save_datas():
-    conn = sqlite3.connect('../news.db')
+    current_path = os.path.dirname(__file__)
+    db_path = os.path.join(current_path, "../news.db")
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
     for data in datas:
@@ -52,16 +55,17 @@ def save_datas():
         country = ''
         abstract = ''
         # 如果standfirst不存在，就赋予空字符串
-        standfirst = data['fields']['standfirst'] if 'standfirst' in data['fields'] else ''
+        lead_paragraph = data['fields']['standfirst'] if 'standfirst' in data['fields'] else ''
         api_source = 'guardian'
         keywords = ''
         word_count = int(data['fields']['wordcount'])
 
-        cursor.execute('''INSERT INTO news VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', \
-            (headline,abstract,standfirst,content,pub_time,link,source,api_source,word_count,keywords,country,))
+        # 在数据库中查询，如果已经存在，就不再插入
+        cursor.execute('''SELECT * FROM news WHERE headline=? AND link=?''', (headline,link,))
+
+        if cursor.fetchone() is None:
+            cursor.execute('''INSERT INTO news VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', \
+                (headline,abstract,lead_paragraph,content,pub_time,link,source,api_source,word_count,keywords,country,None,None,None,None,None))
 
     conn.commit()
     conn.close()
-
-fetch_datas()
-save_datas()

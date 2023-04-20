@@ -1,12 +1,11 @@
 
 from datetime import datetime
 import json
+import os
 import sqlite3
 from requests import request
 
-API_KEY = 'b861c1e6e7f80f58d3809b86e8a35f74'
-BASE_URL = 'http://api.mediastack.com/v1/news'
-CATEGORIES = 'politics'
+API_KEY: str = 'b861c1e6e7f80f58d3809b86e8a35f74'
 
 # mediastack这个源只能免费获取到今年开始的新闻
 # ！！！注意，每个月只能免费调用500该api
@@ -14,6 +13,9 @@ CATEGORIES = 'politics'
 datas = []
 
 def fetch_datas():
+    CATEGORIES = 'politics'
+    BASE_URL = 'http://api.mediastack.com/v1/news'
+
     now = datetime.now()
 
     total = 0
@@ -41,7 +43,9 @@ def fetch_datas():
         print('page-' + str(page) + ' is done!')
 
 def save_datas():
-    conn = sqlite3.connect('../news.db')
+    current_path = os.path.dirname(__file__)
+    db_path = os.path.join(current_path, "../news.db")
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
     for data in datas:
@@ -52,16 +56,17 @@ def save_datas():
         country = data['country']
         abstract = data['description']
         content = ''
-        standfirst = ''
+        lead_paragraph = ''
         api_source = 'mediastack'
         keywords = ''
         word_count = 0
 
-        cursor.execute('''INSERT INTO news VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', \
-            (headline,abstract,standfirst,content,pub_time,link,source,api_source,word_count,keywords,country))
+        # 在数据库中查询，如果已经存在，就不再插入
+        cursor.execute('''SELECT * FROM news WHERE headline=? AND link=?''', (headline,link,))
+
+        if cursor.fetchone() is None:
+            cursor.execute('''INSERT INTO news VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', \
+                (headline,abstract,lead_paragraph,content,pub_time,link,source,api_source,word_count,keywords,country,None,None,None,None,None))
 
     conn.commit()
     conn.close()
-
-fetch_datas()
-save_datas()

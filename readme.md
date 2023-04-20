@@ -1,37 +1,42 @@
-## politics
+# Politics Analyze
 
-### sources
+## Data Sources
 
 - nytimes
 - guardian
 - mediastack
 
-### setps
+## Local Steps
 
 ```bash
 # 创建虚拟环境
-python3 -m venv venv
+python3 -m venv crawler
 
 # 激活虚拟环境
-source venv/bin/activate
+source crawler/Scripts/activate
 
 # 安装依赖
 pip install -r requirements.txt
 
-# 创建数据库
-python init_db.py
+# 创建数据库并获取数据
+python fetch_data.py
 
-# 搞数据
-# 1. guardian
-cd guardian
-python fetch.py
+# 分析数据
+python analyze.py
 
-# 2. mediastack
-cd mediastack
-python fetch.py
+# 启动服务
+python app.py
 
-# 3. nytimes
-cd nytimes
-python fetch.py
-python saveData.py
+# 打开浏览器
+http://localhost:8000
+```
+
+## Local Docker Steps
+
+```bash
+# 构建镜像并运行
+docker-compose up -d --build
+
+# 打开浏览器
+http://localhost
 ```

@@ -1,0 +1,16 @@
+version: '3'
+services:
+  myapp:
+    container_name: AmericaPolitics
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+
+  nginx:
+    image: nginx
+    container_name: AmericaPoliticsNginx
+    volumes:
+      - ./visual/web:/usr/share/nginx/html
+    ports:
+      - "80:80"

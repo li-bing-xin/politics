@@ -23,3 +23,10 @@ soupsieve==2.4
 tqdm==4.65.0
 urllib3==1.26.15
 yarl==1.8.2
+Flask==2.2.3
+Flask-Cors==3.0.10
+itsdangerous==2.1.2
+Jinja2==3.1.2
+MarkupSafe==2.1.2
+six==1.16.0
+Werkzeug==2.2.3
