@@ -363,4 +363,8 @@ def get_predict():
 
 
 if __name__ == "__main__":
-    app.run(port=3000, host="0.0.0.0")
+    # app.run(port=3000, host="0.0.0.0")
+    from wsgiref.simple_server import make_server
+    server = make_server('0.0.0.0', 3000, app)
+    server.serve_forever()
+    app.run()
