@@ -6,7 +6,8 @@ const apis = {
 	topTopicsByMonth: '/api/top_topics_by_month',
 	statistic: '/api/statistic',
 	biasAndSentimentStatistic: '/api/bias_and_sentiment_statistic',
-	newsByState: '/api/news_by_state'
+	newsByState: '/api/news_by_state',
+	predict: '/api/predict_next_month_top_topics_10'
 }
 
 async function topTopicsReq(dateRange = 7) {
@@ -36,6 +37,11 @@ async function newsByStateReq() {
 	return await response.json()
 }
 
+async function getPredict() {
+	const response = await fetch(BASE_URL + apis.predict)
+	return await response.json()
+}
+
 const { createApp } = Vue
 const app = createApp({
 	data() {
@@ -53,7 +59,7 @@ const app = createApp({
 			biasAndSentimentStatistic: [],
 			activeBSMedia: null,
 			currentBiasOrSentiment: 'bias',
-			topTopicsDuration: 30, // top n topic duration, default 7 days
+			topTopicsDuration: 365, // top n topic duration, default 7 days
 		}
 	},
 	methods: {
@@ -108,6 +114,10 @@ const app = createApp({
 			this.topTopicsLastYear = data
 			this.makeChart4()
 			this.makeChart5()
+		},
+		async getPredict() {
+			let data = await getPredict()
+			console.log(data, '55555');
 		},
 		onChangeActiveBSMedia(e) {
 			const v = e.target.value
@@ -443,6 +453,7 @@ const app = createApp({
 		this.getStatistic()
 		this.getBiasAndSentimentStatistic()
 		this.getNewsByState()
+		this.getPredict()
 	},
 })
 window.app = app
