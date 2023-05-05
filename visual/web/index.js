@@ -1,6 +1,6 @@
 const ECHARTS_AXIS_COLOR = '#ddd'
 
-const BASE_URL = 'http://127.0.0.1:3000'
+const BASE_URL = location.origin || 'http://127.0.0.1:3000'
 const apis = {
 	topTopics: '/api/top_topics',
 	topTopicsByMonth: '/api/top_topics_by_month',
