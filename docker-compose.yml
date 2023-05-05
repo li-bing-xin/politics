@@ -1,4 +1,9 @@
 version: '3'
+
+networks:
+    gateway:
+        external: true
+
 services:
   myapp:
     container_name: AmericaPolitics
@@ -19,6 +24,8 @@ services:
     container_name: politics-web
     environment:
         - TZ=Asia/Shanghai
+    build:
+        context: .
     labels:
         - traefik.enable=true
         - traefik.http.routers.politics-web.rule=Host(`polinsight.xyz`)
