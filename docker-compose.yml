@@ -15,16 +15,16 @@ services:
     ports:
       - "8080:80"
 
-  web:
-    container_name: web
+  politics-web:
+    container_name: politics-web
     environment:
         - TZ=Asia/Shanghai
     labels:
         - traefik.enable=true
-        - traefik.http.routers.wapen-web.rule=Host(`polinsight.xyz`)
-        - traefik.http.services.wapen-web.loadbalancer.server.port=8080
-        - traefik.http.routers.wapen-web.tls=true
-        - traefik.http.routers.wapen-web.tls.certresolver=letsencrypt
+        - traefik.http.routers.politics-web.rule=Host(`polinsight.xyz`)
+        - traefik.http.services.politics-web.loadbalancer.server.port=8080
+        - traefik.http.routers.politics-web.tls=true
+        - traefik.http.routers.politics-web.tls.certresolver=letsencrypt
     privileged: true
     stdin_open: true
     tty: true
