@@ -2,11 +2,11 @@
 from datetime import datetime
 import os
 import sqlite3
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, redirect, render_template, request, send_from_directory, url_for
 from flask_cors import CORS
 import pandas as pd
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path="", static_folder="../web/")
 CORS(app)
 
 current_path = os.path.dirname(__file__)
@@ -361,13 +361,6 @@ def get_predict():
 
     return jsonify(arr)
 
-
-@app.route('/<path:path>', methods=["GET"])
-def send_report(path):
-    print(99999)
-    statics_path = os.path.join(current_path, "../web")
-    print(statics_path, 'statics_path')
-    return send_from_directory(statics_path, path)
 
 if __name__ == "__main__":
     app.run(port=3000, host="0.0.0.0")
