@@ -5,36 +5,16 @@ networks:
         external: true
 
 services:
-  myapp:
-    container_name: AmericaPolitics
+  politics:
+    container_name: politics
     build:
       dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-
-  nginx:
-    image: nginx
-    container_name: AmericaPoliticsNginx
-    volumes:
-      - ./visual/web:/usr/share/nginx/html
-    ports:
-      - "8080:80"
-
-  politics-web:
-    container_name: politics-web
-    environment:
-        - TZ=Asia/Shanghai
-    build:
-        context: .
     labels:
         - traefik.enable=true
-        - traefik.http.routers.politics-web.rule=Host(`polinsight.xyz`)
-        - traefik.http.services.politics-web.loadbalancer.server.port=8080
-        - traefik.http.routers.politics-web.tls=true
-        - traefik.http.routers.politics-web.tls.certresolver=letsencrypt
-    privileged: true
-    stdin_open: true
-    tty: true
+        - traefik.http.routers.politics.rule=Host(`polinsight.xyz`)
+        - traefik.http.services.politics.loadbalancer.server.port=3000
+        - traefik.http.routers.politics.tls=true
+        - traefik.http.routers.politics.tls.certresolver=letsencrypt
     networks:
         - gateway
     restart: always
