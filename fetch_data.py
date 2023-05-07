@@ -21,4 +21,6 @@ def fetch_data():
     fetch_nytimes()
     save_nytimes()
 
-fetch_data()
+# 如果从命令行运行该文件，则执行fetch_data()函数
+if __name__ == '__main__':
+    fetch_data()

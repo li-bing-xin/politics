@@ -28,6 +28,17 @@ header{
     line-height: 70px;
     letter-spacing: 2px;
 }
+header .refresh{
+    color: #bbb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    right: 13px;
+    top: 16px;
+    height: 20px;
+    font-size: 14px;
+}
 select {
     border: 1px solid #ddd;
     outline: none;

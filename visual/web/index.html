@@ -17,6 +17,10 @@
 		<div id="app" class="no-select">
             <header>
                 <h1 class="white">Political Statistics from News Report</h1>
+                <div class="refresh pointer" title="update news data" @click="onRefreshData">
+                    Refresh
+                    <img src="./assets/refresh.svg" alt=""  width="22" style="margin-left: 2px">
+                </div>
             </header>
             <main>
                 <section class="l">
@@ -90,7 +94,7 @@
                         <div id="chart_5"></div>
                     </div>
                     <div class="box">
-                        <h4>Predict</h4>
+                        <h4>Predict Top 10 Topics</h4>
                         <div id="chart_6"></div>
                     </div>
                 </section>

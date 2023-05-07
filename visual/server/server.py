@@ -2,7 +2,8 @@
 from datetime import datetime
 import os
 import sqlite3
-from flask import Flask, jsonify, redirect, render_template, request, send_from_directory, url_for
+import threading
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import pandas as pd
 
@@ -350,20 +351,40 @@ def get_predict():
         if item[0] not in window:
             window.pop(0)
             window.append(item[0])
-            predictions.append(item[0])
+            count_sum = sum([data[topic][-1][1] for topic in window])
+            predictions.append({'name': item[0], 'count': count_sum})
         if len(predictions) == 20:
             break
 
-    # 输出预测结果
-    arr = []
-    for i, topic in enumerate(predictions):
-        arr.append(topic)
+    # 过滤掉黑名单中的话题
+    predictions = [item for item in predictions if item['name'] not in BLACK_LIST_TOPICS]
 
-    return jsonify(arr)
+    return jsonify(predictions)
+
+
+update_thread = None
+
+def fetch_and_analyze():
+    os.system('python fetch_data.py')
+    os.system('python analyze.py')
+
+@app.route("/api/update_news_data", methods=["GET"])
+def update_news_data():
+    # 使用一个线程去更新数据
+    global update_thread
+
+    # 判断fetch_data_thread是否在运行中
+    if update_thread is not None and update_thread.is_alive():
+        return jsonify({'ok': False}) # 该False表示正在更新数据中，不需要再更新了
+
+    update_thread = threading.Thread(target=fetch_and_analyze)
+    update_thread.start()
+
+    return jsonify({'ok': True})
 
 
 if __name__ == "__main__":
-    # app.run(port=3000, host="0.0.0.0")
+    print('please open http://127.0.0.1:3000/index.html')
     from wsgiref.simple_server import make_server
     server = make_server('0.0.0.0', 3000, app)
     server.serve_forever()

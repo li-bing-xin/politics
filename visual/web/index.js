@@ -7,7 +7,8 @@ const apis = {
 	statistic: '/api/statistic',
 	biasAndSentimentStatistic: '/api/bias_and_sentiment_statistic',
 	newsByState: '/api/news_by_state',
-	predict: '/api/predict_next_month_top_topics_10'
+	predict: '/api/predict_next_month_top_topics_10',
+	updateNewsData: '/api/update_news_data'
 }
 
 async function topTopicsReq(dateRange = 7) {
@@ -42,6 +43,11 @@ async function getPredict() {
 	return await response.json()
 }
 
+async function updateNewsData() {
+	const response = await fetch(BASE_URL + apis.updateNewsData)
+	return await response.json()
+}
+
 const { createApp } = Vue
 const app = createApp({
 	data() {
@@ -67,7 +73,6 @@ const app = createApp({
 			let data = await topTopicsReq(this.topTopicsDuration)
 			this.topTopics = data.slice(0, 10).reverse()
 			this.makeChart1()
-			this.makeChart6()
 		},
 		async getTopTopicsByMonth() {
 			let data = await topTopicsByMonthReq()
@@ -117,7 +122,8 @@ const app = createApp({
 		},
 		async getPredict() {
 			let data = await getPredict()
-			console.log(data, '55555');
+			this.predictData = data
+			this.makeChart6()
 		},
 		onChangeActiveBSMedia(e) {
 			const v = e.target.value
@@ -133,6 +139,16 @@ const app = createApp({
 			const v = e.target.value
 			this.topTopicsDuration = v
 			this.getTopTopics()
+		},
+		onRefreshData() {
+			updateNewsData().then((res) => {
+				const updating = !res.ok
+				if (updating) {
+					alert('News data is updating.')
+				} else {
+					alert('The update task is started in the background.')
+				}
+			})
 		},
 		makeChart1() {
 			if (!this.topTopics.length) {
@@ -415,9 +431,11 @@ const app = createApp({
 			this.chartInst6 =
 				this.chartInst6 || echarts.init(document.getElementById('chart_6'))
 
+			const data = this.predictData?.slice(0, 10).reverse() || []
+
 			// 指定图表的配置项和数据
 			var option = {
-				color: ['rgb(98,213,142)'],
+				color: ['rgb(242,202,117)'],
 				grid: {
 					left: 90,
 					bottom: 20,
@@ -429,7 +447,7 @@ const app = createApp({
 					color: ECHARTS_AXIS_COLOR,
 				},
 				yAxis: {
-					data: this.topTopics.map(item => item.name),
+					data: data.map(item => item.name),
 				},
 				xAxis: {},
 				series: [
@@ -437,7 +455,7 @@ const app = createApp({
 						name: 'Frequency',
 						type: 'bar',
 						barWidth: 8,
-						data: this.topTopics.map(item => item.count),
+						data: data.map(item => item.count),
 					},
 				],
 			}
