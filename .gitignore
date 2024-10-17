@@ -2,5 +2,4 @@
 crawler/
 venv/
 data/
-*.db
 __pycache__/

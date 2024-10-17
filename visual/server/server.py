@@ -225,7 +225,7 @@ def get_news_by_state():
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute(
-        "SELECT analyzed_topic, analyzed_state FROM news WHERE pub_time >= date('now', '-365 day')"
+        "SELECT analyzed_topic, state FROM news WHERE pub_time >= date('now', '-365 day')"
     )
     rows = cursor.fetchall()
     res = {}

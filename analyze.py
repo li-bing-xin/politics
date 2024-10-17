@@ -1,10 +1,12 @@
 import json
 import os
 import sqlite3
-import openai
+from openai import OpenAI
 
-openai.api_key = "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"
-
+client = OpenAI(
+    base_url="https://xiaoai.plus/v1",
+    api_key="sk-BrYmBV51LMtp3tCN360922Bf4e704865968c3a9422904bD8"
+)
 
 def query_openai(headline: str, abstract: str):
     prompt = (
@@ -27,7 +29,7 @@ def query_openai(headline: str, abstract: str):
         + "\n\n"
     )
 
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {
@@ -37,16 +39,24 @@ def query_openai(headline: str, abstract: str):
         ],
     )
 
-    response = str(response)
-    response = json.loads(response)
-    result = response["choices"][0]["message"]["content"]
-    answers = [item[2:].strip() for item in result.split("\n")]
+    print(response.choices[0].message.content, '11111111111')
 
+    # response = str(response)
+    print(response, type(response), 'response1')
+    # response = json.loads(response)
+    result = response.choices[0].message.content
+    answers = [item[2:].strip() for item in result.split("\n")]
+    print(answers, 'answers')
     topic: str = answers[0]
     keywords: str = answers[1]
     sentiment: str = answers[2]
     bias: str = answers[3].lower()
     state: str = answers[4]
+    print(topic, 'topic')
+    print(keywords, 'keywords')
+    print(sentiment, 'sentiment')
+    print(bias, 'bias')
+    print(state, 'state')
 
     if len(bias.split(" ")) > 1:
         bias = "centrist"
@@ -56,6 +66,7 @@ def query_openai(headline: str, abstract: str):
 
     state = 'None' if 'None' in state else state.strip()
     state = state[:-1] if state and state[-1] == '.' else state
+    print(state, 'state')
 
     return {
         "topic": topic,
@@ -102,7 +113,8 @@ def analyze():
                     (topic, keywords, sentiment, bias, state, id),
                 )
                 conn.commit()
-            except:
+            except Exception as e:
+                print(e, 'e')
                 # 如果出错了，就重新执行该脚本
                 print("重新启动任务")
                 os.system("python analyze.py")
